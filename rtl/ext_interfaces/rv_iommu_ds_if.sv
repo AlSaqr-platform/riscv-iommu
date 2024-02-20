@@ -107,10 +107,10 @@ module rv_iommu_ds_if #(
     always_comb begin
         w_select = '0;
         unique case (ds_req_o.aw.id)   // Selected AWID
-            4'b0000:                            w_select = 2'd0; // CQ
-            4'b0001:                            w_select = 2'd1; // FQ
-            4'b0010:                            w_select = 2'd2; // MSI IG
-            4'b0011:                            w_select = 2'd3; // MRIF Handler
+            5'b0000:                            w_select = 2'd0; // CQ
+            5'b0001:                            w_select = 2'd1; // FQ
+            5'b0010:                            w_select = 2'd2; // MSI IG
+            5'b0011:                            w_select = 2'd3; // MRIF Handler
         endcase
     end
 
@@ -169,11 +169,11 @@ module rv_iommu_ds_if #(
     always_comb begin
         r_select = 0;
         unique case (ds_resp_i.r.id)
-            4'b0000:                        r_select = 0;   // PTW
-            4'b0001:                        r_select = 1;   // CDW
-            4'b0010:                        r_select = 2;   // CQ
-            4'b0011:                        r_select = 3;   // MSIPTW
-            4'b0100:                        r_select = 4;   // MRIF Handler
+            5'b0000:                        r_select = 0;   // PTW
+            5'b0001:                        r_select = 1;   // CDW
+            5'b0010:                        r_select = 2;   // CQ
+            5'b0011:                        r_select = 3;   // MSIPTW
+            5'b0100:                        r_select = 4;   // MRIF Handler
             default:                        r_select = 0;
         endcase
     end
@@ -199,10 +199,10 @@ module rv_iommu_ds_if #(
     always_comb begin
         b_select = 0;
         unique case (ds_resp_i.b.id)
-            4'b0000:                        b_select = 0;   // CQ
-            4'b0001:                        b_select = 1;   // FQ
-            4'b0010:                        b_select = 2;   // MSI IG
-            4'b0011:                        b_select = 3;   // MRIF Handler
+            5'b0000:                        b_select = 0;   // CQ
+            5'b0001:                        b_select = 1;   // FQ
+            5'b0010:                        b_select = 2;   // MSI IG
+            5'b0011:                        b_select = 3;   // MRIF Handler
         endcase
     end
 
