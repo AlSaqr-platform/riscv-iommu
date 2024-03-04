@@ -468,7 +468,7 @@ package rv_iommu;
 endpackage
 
 // An AXI interface with IOMMU-related signals
-interface AXI_BUS_MMU #(
+interface AXI_BUS_IOMMU #(
   parameter AXI_ADDR_WIDTH = -1,
   parameter AXI_DATA_WIDTH = -1,
   parameter AXI_ID_WIDTH   = -1,
