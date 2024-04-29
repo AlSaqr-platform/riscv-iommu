@@ -16,69 +16,82 @@
 // Description: Top module to instance riscv_iommu module, 
 //				defining parameters and types for lint checks.
 
-`include "include/assertions.svh"
-`include "ariane_axi_soc_pkg.sv"
-`include "typedef_global.svh"
+`include "assertions.svh"
+`include "register_interface/typedef.svh"
+
+`include "riscv_pkg.sv"
+`include "lint_wrapper_pkg.sv"
+
 `include "rv_iommu_pkg.sv"
 `include "rv_iommu_reg_pkg.sv"
 `include "rv_iommu_field_pkg.sv"
 
-module lint_checks (
+module lint_checks 
+import lint_wrapper::*;
+import rv_iommu::*;
+(
 
-	input  logic clk_i,
-	input  logic rst_ni,
+	input  logic 					clk_i,
+	input  logic 					rst_ni,
 
 	// Translation Request Interface (Slave)
-	input  ariane_axi_soc::req_iommu_t  dev_tr_req_i,
-	output ariane_axi_soc::resp_t   	dev_tr_resp_o,
+	input  req_iommu_t				dev_tr_req_i,
+	output resp_t   				dev_tr_resp_o,
 
 	// Translation Completion Interface (Master)
-	input  ariane_axi_soc::resp_t   	dev_comp_resp_i,
-	output ariane_axi_soc::req_t   		dev_comp_req_o,
+	input  resp_t   				dev_comp_resp_i,
+	output req_t   					dev_comp_req_o,
 
 	// Data Structures Interface (Master)
-	input  ariane_axi_soc::resp_t   	ds_resp_i,
-	output ariane_axi_soc::req_t    	ds_req_o,
+	input  resp_t   				ds_resp_i,
+	output req_t    				ds_req_o,
 
-	// Programming Interface (Slave) (AXI4 Full -> AXI4-Lite -> Reg IF)
-	input  ariane_axi_soc::req_slv_t    prog_req_i,
-	output ariane_axi_soc::resp_slv_t   prog_resp_o,
+	// Programming Interface (Slave)
+	input  req_slv_t    			prog_req_i,
+	output resp_slv_t   			prog_resp_o,
 
-	output logic [15:0] wsi_wires_o
+	output logic [NumIRQWires-1:0]	wsi_wires_o
 );
 
+	typedef logic [64-1:0]  reg_addr_t;
+	typedef logic [32-1:0]  reg_data_t;
+	typedef logic [4-1:0]   reg_strb_t;
+
+	// Define reg_req_t and reg_rsp_t structs
+	`REG_BUS_TYPEDEF_ALL(iommu_reg, reg_addr_t, reg_data_t, reg_strb_t)
+
 	riscv_iommu #(
-		.IOTLB_ENTRIES		( 16						),
-		.DDTC_ENTRIES		( 8							),
-		.PDTC_ENTRIES		( 8							),
-		.MRIFC_ENTRIES		( 4							),
+		.IOTLB_ENTRIES		( 16				),
+		.DDTC_ENTRIES		( 8					),
+		.PDTC_ENTRIES		( 8					),
+		.MRIFC_ENTRIES		( 4					),
 
-		.InclPC             ( 1'b1						),
-		.InclBC             ( 1'b1						),
-		.InclDBG			( 1'b1						),
+		.InclPC             ( 1'b1				),
+		.InclBC             ( 1'b1				),
+		.InclDBG			( 1'b1				),
 
-		.MSITrans			( rv_iommu::MSI_FLAT_MRIF	),
-		.IGS         		( rv_iommu::BOTH			),
-		.N_INT_VEC          ( ariane_soc::IOMMUNumWires ),
-		.N_IOHPMCTR			( 16						),
+		.MSITrans			( MSI_FLAT_MRIF		),
+		.IGS         		( BOTH				),
+		.N_INT_VEC          ( NumIRQWires		),
+		.N_IOHPMCTR			( 16				),
 
-		.ADDR_WIDTH			( 64						),
-		.DATA_WIDTH			( 64						),
-		.ID_WIDTH			( ariane_soc::IdWidth		),
-		.ID_SLV_WIDTH		( ariane_soc::IdWidthSlave	),
-		.USER_WIDTH			( 1							),
-		.aw_chan_t			( ariane_axi_soc::aw_chan_t ),
-		.w_chan_t			( ariane_axi_soc::w_chan_t	),
-		.b_chan_t			( ariane_axi_soc::b_chan_t	),
-		.ar_chan_t			( ariane_axi_soc::ar_chan_t ),
-		.r_chan_t			( ariane_axi_soc::r_chan_t	),
-		.axi_req_t			( ariane_axi_soc::req_t		),
-		.axi_rsp_t			( ariane_axi_soc::resp_t	),
-		.axi_req_slv_t		( ariane_axi_soc::req_slv_t	),
-		.axi_rsp_slv_t		( ariane_axi_soc::resp_slv_t),
-		.axi_req_iommu_t	( ariane_axi_soc::req_iommu_t),
-		.reg_req_t			( iommu_reg_req_t			),
-		.reg_rsp_t			( iommu_reg_rsp_t			)
+		.ADDR_WIDTH			( AddrWidth			),
+		.DATA_WIDTH			( DataWidth			),
+		.ID_WIDTH			( IdWidth			),
+		.ID_SLV_WIDTH		( IdWidthSlv		),
+		.USER_WIDTH			( UserWidth			),
+		.aw_chan_t			( aw_chan_t 		),
+		.w_chan_t			( w_chan_t			),
+		.b_chan_t			( b_chan_t			),
+		.ar_chan_t			( ar_chan_t 		),
+		.r_chan_t			( r_chan_t			),
+		.axi_req_t			( req_t				),
+		.axi_rsp_t			( resp_t			),
+		.axi_req_slv_t		( req_slv_t			),
+		.axi_rsp_slv_t		( resp_slv_t		),
+		.axi_req_iommu_t	( req_iommu_t		),
+		.reg_req_t			( iommu_reg_req_t	),
+		.reg_rsp_t			( iommu_reg_rsp_t	)
 	) i_riscv_iommu (
 
 		.clk_i				( clk_i				),
@@ -96,11 +109,11 @@ module lint_checks (
 		.ds_resp_i			( ds_resp_i			),
 		.ds_req_o			( ds_req_o		    ),
 
-		// Programming Interface (Slave) (AXI4 Full -> AXI4-Lite -> Reg IF)
+		// Programming Interface (Slave)
 		.prog_req_i			( prog_req_i		),
 		.prog_resp_o		( prog_resp_o		),
 
-		.wsi_wires_o		( wsi_wires_o[(ariane_soc::IOMMUNumWires-1):0])
+		.wsi_wires_o		( wsi_wires_o		)
 	);
 
 endmodule
