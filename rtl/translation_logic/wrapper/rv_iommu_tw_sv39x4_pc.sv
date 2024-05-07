@@ -570,11 +570,7 @@ module rv_iommu_tw_sv39x4_pc #(
             .ignore_o           ( msiptw_ignore         ),
 
             // Request IOVA
-<<<<<<< HEAD
-            .req_iova_i         (iova_i             ),
-=======
             .req_iova_i         ( iova_i                ),
->>>>>>> 5ea5c95358dc4e4bfac633d6577a1983ca4b57c8
             // First-stage translation enable
             .en_1S_i            ( S1_en                 ),
             // The translation is read-for-execute
