@@ -188,19 +188,6 @@ module rv_iommu_tw_sv39x4 #(
     riscv::pte_t                iotlb_up_1S_content;
     riscv::pte_t                iotlb_up_2S_content;
 
-    // HPM event indicators
-    logic cdw_active, ptw_active;
-    assign iotlb_miss_o = iotlb_access & (~iotlb_lu_hit);
-    assign ddt_walk_o   = cdw_active;
-    assign pdt_walk_o   = 1'b0;
-    assign s1_ptw_o     = ptw_active & (en_1S);
-    assign s2_ptw_o     = ptw_active & (en_2S);
-    assign gscid_o      = gscid;
-    assign pscid_o      = pscid;
-
-    // The translation involved a superpage
-    assign is_superpage_o = iotlb_lu_1S_2M | iotlb_lu_1S_1G | iotlb_lu_2S_2M | iotlb_lu_2S_1G;
-
     // To check whether first and second-stage translation modes are Bare
     logic S1_en, S2_en;
     assign S1_en    = (dc_base.fsc.mode != 4'b0000);
