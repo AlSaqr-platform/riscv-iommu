@@ -379,10 +379,18 @@ module rv_iommu_cdw #(
                                 wait_rlast_n    = 1'b1;
                             end
 
+                            // If inclPC == 0 and dc.tc.pdtv == 1, stop and report "TRANS_TYPE_DISALLOWED"
+                            else if (dc_tc.pdtv) begin
+                                state_n         = ERROR;
+                                cause_n         = rv_iommu::TRANS_TYPE_DISALLOWED;
+                                wait_rlast_n    = 1'b1;
+                            end
+                            
                             // Config checks
-                            if ((|dc_tc.reserved_1) || (|dc_tc.reserved_2) || 
-                                (!dc_tc.en_ats && (dc_tc.t2gpa || dc_tc.en_pri || dc_tc.prpr)) ||
-                                (!caps_t2gpa_i && dc_tc.t2gpa) ||
+                            else if ((|dc_tc.reserved_1) || (|dc_tc.reserved_2) || 
+                                (!caps_ats_i && (dc_tc.en_ats || dc_tc.en_pri || dc_tc.prpr)) ||
+                                (!dc_tc.en_ats && (dc_tc.t2gpa || dc_tc.en_pri)) ||
+                                (!dc_tc.en_pri && dc_tc.prpr) ||
                                 (!dc_tc.pdtv && dc_tc.dpe) ||
                                 (!caps_amo_hwad_i && (dc_tc.sade || dc_tc.gade)) ||
                                 (fctl_be_i != dc_tc.sbe) ||
@@ -616,6 +624,8 @@ module rv_iommu_cdw #(
             assign up_dc_content.iohgatp    = dc_iohgatp_q;
             assign up_dc_content.ta         = dc_ta_q;
             assign up_dc_content.fsc        = dc_fsc_q;
+
+            assign msi_check_error     = 1'b0;
 
         end : gen_msi_support_disabled
     endgenerate
