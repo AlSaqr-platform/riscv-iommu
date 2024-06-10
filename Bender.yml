@@ -37,6 +37,7 @@ sources:
   - rtl/ext_interfaces/rv_iommu_axi4_bc.sv
   - rtl/ext_interfaces/rv_iommu_ds_if.sv
   - rtl/ext_interfaces/rv_iommu_prog_if.sv
+  - rtl/ext_interfaces/rv_iommu_ign_slv.sv
   # Level 1
   - rtl/software_interface/regmap/rv_iommu_field_arb.sv
   - rtl/software_interface/rv_iommu_cq_handler.sv
