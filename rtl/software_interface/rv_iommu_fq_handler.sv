@@ -129,7 +129,7 @@ module rv_iommu_fq_handler #(
 
     // Signal to indicate that the FQ is currently writing a new record
     logic is_idle;
-    assign is_idle = (wr_state_q == B_RESP);
+    assign is_idle = mem_resp_i.b_valid;
     logic is_empty;
 
     // Wires to connect FIFO output
