@@ -96,7 +96,9 @@ module riscv_iommu #(
     input  axi_req_slv_t    prog_req_i,
     output axi_rsp_slv_t    prog_resp_o,
 
-    output logic [(N_INT_VEC-1):0] wsi_wires_o
+    output logic [(N_INT_VEC-1):0] wsi_wires_o,
+
+    input logic  [127:0]           iommu_lock_xor_key_i
 );
 
     // To trigger an address translation. Only set after verifying AXI4 boundary limits
